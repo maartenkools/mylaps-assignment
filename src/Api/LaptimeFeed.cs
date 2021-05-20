@@ -17,42 +17,40 @@ namespace Api
 
         public async IAsyncEnumerable<Laptime> ReadLaptimesAsync()
         {
-            var passingTimeRegistration = new Dictionary<uint, TimeSpan>();
-            var lapRegistration = new Dictionary<uint, uint>();
+            var lapRegistration = new Dictionary<uint, LapRegistrationRecord>();
             await foreach (var record in this.csvReader.ReadAsync().ConfigureAwait(false))
             {
                 var kartNumber = uint.Parse(record[0]);
                 var passingTime = TimeSpan.Parse(record[1]);
 
-                var lap = DetermineLap(kartNumber, lapRegistration);
-                var laptime = DetermineLaptime(kartNumber, passingTime, passingTimeRegistration);
+                var lap = DetermineLap(kartNumber, passingTime, lapRegistration);
 
-                if (lap != 0)
+                if (lap != null)
                 {
-                    yield return new Laptime { Number = kartNumber, Lap = lap, Time = laptime };
+                    yield return new Laptime { Number = kartNumber, Lap = lap.Value.LapNumber, Time = lap.Value.Laptime };
                 }
             }
         }
 
-        private static uint DetermineLap(uint kartNumber, IDictionary<uint, uint> lapRegistration)
+        private static (uint LapNumber, TimeSpan Laptime)? DetermineLap(uint kartNumber, TimeSpan passingTime, IDictionary<uint, LapRegistrationRecord> lapRegistration)
         {
-            if (!lapRegistration.TryGetValue(kartNumber, out var currentLap)) currentLap = 0;
-            else currentLap++;
-
-            lapRegistration[kartNumber] = currentLap;
-
-            return currentLap;
-        }
-
-        private static TimeSpan DetermineLaptime(uint kartNumber, TimeSpan passingTime, IDictionary<uint, TimeSpan> passingTimeRegistration)
-        {
-            if (!passingTimeRegistration.TryGetValue(kartNumber, out var previousPassingTime))
+            if (!lapRegistration.TryGetValue(kartNumber, out var lapRegistrationRecord))
             {
-                passingTimeRegistration[kartNumber] = passingTime;
-                return TimeSpan.Zero;
+                lapRegistration[kartNumber] = new LapRegistrationRecord { LapNumber = 0, PassingTime = passingTime };
+                return null;
             }
 
-            return passingTime - previousPassingTime;
+            var lap = lapRegistrationRecord.LapNumber + 1;
+            var laptime = passingTime - lapRegistrationRecord.PassingTime;
+
+            lapRegistration[kartNumber] = new LapRegistrationRecord { LapNumber = lap, PassingTime = passingTime };
+            return (lap, laptime);
+        }
+
+        private class LapRegistrationRecord
+        {
+            public uint LapNumber { get; set; }
+            public TimeSpan PassingTime { get; set; }
         }
     }
 }

@@ -17,23 +17,41 @@ namespace Api
 
         public async IAsyncEnumerable<Laptime> ReadLaptimesAsync()
         {
-            var previousPassingTimes = new Dictionary<uint, TimeSpan>();
+            var passingTimeRegistration = new Dictionary<uint, TimeSpan>();
+            var lapRegistration = new Dictionary<uint, uint>();
             await foreach (var record in this.csvReader.ReadAsync().ConfigureAwait(false))
             {
                 var kartNumber = uint.Parse(record[0]);
                 var passingTime = TimeSpan.Parse(record[1]);
 
-                if (!previousPassingTimes.TryGetValue(kartNumber, out var previousPassingTime))
+                var lap = DetermineLap(kartNumber, lapRegistration);
+                var laptime = DetermineLaptime(kartNumber, passingTime, passingTimeRegistration);
+
+                if (lap != 0)
                 {
-                    previousPassingTimes[kartNumber] = passingTime;
-                    yield return new Laptime { Number = kartNumber, Time = TimeSpan.Zero };
-                }
-                else
-                {
-                    var laptime = passingTime - previousPassingTime;
-                    yield return new Laptime { Number = kartNumber, Time = laptime };
+                    yield return new Laptime { Number = kartNumber, Lap = lap, Time = laptime };
                 }
             }
+        }
+
+        private static uint DetermineLap(uint kartNumber, IDictionary<uint, uint> lapRegistration)
+        {
+            if(!lapRegistration.TryGetValue(kartNumber, out var currentLap)) currentLap = 0;
+
+            lapRegistration[kartNumber] = currentLap++;
+
+            return currentLap;
+        }
+
+        private static TimeSpan DetermineLaptime(uint kartNumber, TimeSpan passingTime, IDictionary<uint, TimeSpan> passingTimeRegistration)
+        {
+            if(!passingTimeRegistration.TryGetValue(kartNumber, out var previousPassingTime))
+            {
+                passingTimeRegistration[kartNumber] = passingTime;
+                return TimeSpan.Zero;
+            }
+
+            return passingTime - previousPassingTime;
         }
     }
 }

@@ -1,6 +1,7 @@
 using Api.Abstractions;
 using Api.Model;
 using FluentAssertions;
+using FluentAssertions.Execution;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -34,8 +35,12 @@ namespace Api.Tests
 
             var winningLap = await race.StartRaceAsync(2).ConfigureAwait(false);
 
-            winningLap.Number.Should().Be(2);
-            winningLap.Time.Should().Be(TimeSpan.FromSeconds(59));
+            using (new AssertionScope())
+            {
+                winningLap.Number.Should().Be(2, "because kart #2 was expected to be the quickest");
+                winningLap.Lap.Should().Be(1, "because the winning laptime was the first lap");
+                winningLap.Time.Should().Be(TimeSpan.FromSeconds(59));
+            }
         }
 
         private static IServiceProvider BuildServiceProvider()

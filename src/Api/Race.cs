@@ -18,13 +18,24 @@ namespace Api
 
         public async Task<Laptime> StartRaceAsync(uint totalLaps)
         {
+            Laptime fastestLaptime = null;
+
             await foreach (var laptime in this.laptimeFeed.ReadLaptimesAsync().ConfigureAwait(false))
             {
                 if (!this.lapCount.TryGetValue(laptime.Number, out var currentLap)) currentLap = 0;
                 currentLap++;
 
+                if (fastestLaptime == null)
+                {
+                    fastestLaptime = laptime;
+                }
+                else if (laptime.Time > fastestLaptime.Time)
+                {
+                    fastestLaptime = laptime;
+                }
+
                 // First kart to complete all laps finishes the race
-                if (currentLap == totalLaps) return new Laptime { Number = 2, Time = TimeSpan.FromMinutes(1) };
+                if (currentLap == totalLaps) return fastestLaptime;
 
                 this.lapCount[laptime.Number] = currentLap;
             }

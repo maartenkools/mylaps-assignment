@@ -17,9 +17,22 @@ namespace Api
 
         public async IAsyncEnumerable<Laptime> ReadLaptimesAsync()
         {
+            var previousPassingTimes = new Dictionary<uint, TimeSpan>();
             await foreach (var record in this.csvReader.ReadAsync().ConfigureAwait(false))
             {
-                yield return new Laptime { Number = uint.Parse(record[0]), Time = TimeSpan.Parse(record[1]) };
+                var kartNumber = uint.Parse(record[0]);
+                var passingTime = TimeSpan.Parse(record[1]);
+
+                if (!previousPassingTimes.TryGetValue(kartNumber, out var previousPassingTime))
+                {
+                    previousPassingTimes[kartNumber] = passingTime;
+                    yield return new Laptime { Number = kartNumber, Time = TimeSpan.Zero };
+                }
+                else
+                {
+                    var laptime = passingTime - previousPassingTime;
+                    yield return new Laptime { Number = kartNumber, Time = laptime };
+                }
             }
         }
     }

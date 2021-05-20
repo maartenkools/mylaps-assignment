@@ -35,7 +35,7 @@ namespace Api.Tests
             var winningLap = await race.StartRaceAsync(2).ConfigureAwait(false);
 
             winningLap.Number.Should().Be(2);
-            winningLap.Time.Should().Be(TimeSpan.FromMinutes(1));
+            winningLap.Time.Should().Be(TimeSpan.FromSeconds(59));
         }
 
         private static IServiceProvider BuildServiceProvider()

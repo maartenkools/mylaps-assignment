@@ -27,3 +27,4 @@ The API should expose a service that calculates the result of a race based on la
 
 # TODO
 * Remove duplication in the LaptimeFeed class
+* Add the external weather API

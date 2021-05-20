@@ -4,6 +4,7 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
+using System.IO.Abstractions;
 using System.IO.Abstractions.TestingHelpers;
 using System.Threading.Tasks;
 using Xunit;
@@ -63,7 +64,7 @@ namespace Api.Tests
             serviceCollection.AddTransient<IRace, Race>();
             serviceCollection.AddTransient<ILaptimeFeed, LaptimeFeed>();
             serviceCollection.AddTransient<ICsvReader, CsvReader>();
-            serviceCollection.AddTransient(_ => fileSystem ?? new MockFileSystem());
+            serviceCollection.AddTransient<IFileSystem>(_ => fileSystem ?? new MockFileSystem());
 
             return serviceCollection.BuildServiceProvider(true);
         }

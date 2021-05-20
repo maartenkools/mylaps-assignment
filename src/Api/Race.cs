@@ -7,6 +7,13 @@ namespace Api
 {
     public class Race : IRace
     {
+        private readonly ILaptimeFeed laptimeFeed;
+
+        public Race(ILaptimeFeed laptimeFeed)
+        {
+            this.laptimeFeed = laptimeFeed ?? throw new ArgumentNullException(nameof(laptimeFeed));
+        }
+
         public Task<Laptime> StartRaceAsync(uint laps)
         {
             if (laps > 2) throw new InvalidOperationException("The laptime feed doesn't provide enough laptimes");

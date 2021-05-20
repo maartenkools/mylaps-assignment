@@ -1,9 +1,0 @@
-using System;
-
-namespace Api.Internal.Abstractions
-{
-    internal interface ICsvReader
-    {
-        IAsyncEnumerable<string[]> ReadAsync();
-    }
-}

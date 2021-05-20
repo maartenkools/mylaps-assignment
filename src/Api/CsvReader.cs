@@ -19,7 +19,7 @@ namespace Api
 
         public async IAsyncEnumerable<string[]> ReadAsync()
         {
-            using var stream = this.fileSystem.File.Open("karttimes.csv", FileMode.Open);
+            using var stream = this.fileSystem.File.Open(@"Resources\karttimes.csv", FileMode.Open);
             using var streamReader = new StreamReader(stream);
             using var csvReader = new CsvHelper.CsvReader(streamReader, new CsvConfiguration(CultureInfo.InvariantCulture) { HasHeaderRecord = true });
 

@@ -42,7 +42,7 @@ namespace Api.Tests
         {
             var fileSystem = new MockFileSystem(new Dictionary<string, MockFileData>
             {
-                ["karttimes.csv"] = new MockFileData(@"kart,passingtime
+                [@"Resources\karttimes.csv"] = new MockFileData(@"kart,passingtime
 1,12:00:00
 2,12:00:01
 3,12:00:01

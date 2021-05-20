@@ -36,16 +36,17 @@ namespace Api
 
         private static uint DetermineLap(uint kartNumber, IDictionary<uint, uint> lapRegistration)
         {
-            if(!lapRegistration.TryGetValue(kartNumber, out var currentLap)) currentLap = 0;
+            if (!lapRegistration.TryGetValue(kartNumber, out var currentLap)) currentLap = 0;
+            else currentLap++;
 
-            lapRegistration[kartNumber] = currentLap++;
+            lapRegistration[kartNumber] = currentLap;
 
             return currentLap;
         }
 
         private static TimeSpan DetermineLaptime(uint kartNumber, TimeSpan passingTime, IDictionary<uint, TimeSpan> passingTimeRegistration)
         {
-            if(!passingTimeRegistration.TryGetValue(kartNumber, out var previousPassingTime))
+            if (!passingTimeRegistration.TryGetValue(kartNumber, out var previousPassingTime))
             {
                 passingTimeRegistration[kartNumber] = passingTime;
                 return TimeSpan.Zero;

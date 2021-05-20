@@ -18,7 +18,7 @@ The API should expose a service that calculates the result of a race based on la
 3.	The race is finished when one of the drivers completes all laps. 
 4.	The winner of a race is the driver who has driven the fastest lap. 
 5.	The API should return the winner of the race, including the winning lap.
-6.	The API should include weather information fetched from a 3rd party api. Any weather service is good (we’d like to see how you treat external resources). You can find some free ones here: link.
+6.	The API should include weather information fetched from a 3rd party api. Any weather service is good (we’d like to see how you treat external resources). You can find some free ones here: [link](https://rapidapi.com/blog/access-global-weather-data-with-these-weather-apis/).
 
 ## Notes
 *	Your assignment will be evaluated on technical design, code quality and commit hygiene.

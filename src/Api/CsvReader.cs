@@ -1,4 +1,5 @@
 ﻿using Api.Abstractions;
+using CsvHelper.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -20,8 +21,9 @@ namespace Api
         {
             using var stream = this.fileSystem.File.Open("karttimes.csv", FileMode.Open);
             using var streamReader = new StreamReader(stream);
-            using var csvReader = new CsvHelper.CsvReader(streamReader, CultureInfo.InvariantCulture);
+            using var csvReader = new CsvHelper.CsvReader(streamReader, new CsvConfiguration(CultureInfo.InvariantCulture) { HasHeaderRecord = true });
 
+            await csvReader.ReadAsync().ConfigureAwait(false);
             csvReader.ReadHeader();
             while (await csvReader.ReadAsync().ConfigureAwait(false))
             {

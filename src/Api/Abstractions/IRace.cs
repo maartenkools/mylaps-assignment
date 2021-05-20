@@ -8,8 +8,8 @@ namespace Api.Abstractions
         /// <summary>
         /// Starts the race and returns the winning <see cref="Laptime"/>.
         /// </summary>
-        /// <param name="laps">The number of laps the race should run.</param>
+        /// <param name="totalLaps">The number of laps the race should run.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation. The value of the TResult parameter represents the winning <see cref="Laptime"/>.</returns>
-        Task<Laptime> StartRaceAsync(uint laps);
+        Task<Laptime> StartRaceAsync(uint totalLaps);
     }
 }

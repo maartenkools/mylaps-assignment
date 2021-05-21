@@ -2,7 +2,9 @@ using Api.Abstractions;
 using Api.Model;
 using FluentAssertions;
 using FluentAssertions.Execution;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Moq;
 using System;
 using System.Collections.Generic;
 using System.IO.Abstractions;
@@ -71,6 +73,7 @@ namespace Api.Tests
             serviceCollection.AddTransient<ICsvReader, CsvReader>();
             serviceCollection.AddTransient<IFileSystem>(_ => fileSystem ?? new MockFileSystem());
             serviceCollection.AddTransient<IWeatherApi, WeatherApi>();
+            serviceCollection.AddSingleton(Mock.Of<IConfigurationRoot>());
 
             return serviceCollection.BuildServiceProvider(true);
         }

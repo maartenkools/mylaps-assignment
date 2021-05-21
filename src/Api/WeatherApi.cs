@@ -1,4 +1,5 @@
 ﻿using Api.Abstractions;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,5 +10,11 @@ namespace Api
 {
     public class WeatherApi : IWeatherApi
     {
+        private readonly IConfigurationRoot configuration;
+
+        public WeatherApi(IConfigurationRoot configuration)
+        {
+            this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+        }
     }
 }

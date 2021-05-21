@@ -24,6 +24,3 @@ The API should expose a service that calculates the result of a race based on la
 *	Your assignment will be evaluated on technical design, code quality and commit hygiene.
 *	Make sure that your project is accessible on a git repository.
 *	Please do not spend more than 8 hours on this assignment.
-
-# TODO
-* Implement a location request

@@ -1,4 +1,5 @@
 using Api.Abstractions;
+using Api.AccuWeather;
 using Api.Model;
 using FluentAssertions;
 using FluentAssertions.Execution;
@@ -59,6 +60,9 @@ namespace Api.Tests
 
             using (new AssertionScope())
             {
+                currentConditions.City
+                                 .Should()
+                                 .Be("TestLand");
                 currentConditions.Temperature
                                  .Should()
                                  .Be(1.1);
@@ -93,19 +97,24 @@ namespace Api.Tests
 3,12:02:17")
             });
 
+            var locationResponse = new Mock<IRestResponse<AccuWeatherLocationResponseDto>>();
+            locationResponse.Setup(x => x.StatusCode)
+                            .Returns(HttpStatusCode.OK);
+            locationResponse.Setup(x => x.Data)
+                            .Returns(() => new AccuWeatherLocationResponseDto { LocalizedName = "TestLand" });
 
-            var response = new Mock<IRestResponse<List<AccuWeatherApi.AccuWeatherResponseDto>>>();
-            response.Setup(x => x.StatusCode)
+            var conditionsResponse = new Mock<IRestResponse<List<AccuWeatherConditionsResponseDto>>>();
+            conditionsResponse.Setup(x => x.StatusCode)
                     .Returns(HttpStatusCode.OK);
-            response.Setup(x => x.Data)
-                    .Returns(() => new List<AccuWeatherApi.AccuWeatherResponseDto>
+            conditionsResponse.Setup(x => x.Data)
+                    .Returns(() => new List<AccuWeatherConditionsResponseDto>
                     {
-                        new AccuWeatherApi.AccuWeatherResponseDto
+                        new AccuWeatherConditionsResponseDto
                             {
                                 HasPrecipitation = false,
-                                Temperature = new AccuWeatherApi.AccuWeatherResponseDto.TemperatureDto
+                                Temperature = new AccuWeatherConditionsResponseDto.TemperatureDto
                                 {
-                                    Metric = new AccuWeatherApi.AccuWeatherResponseDto.TemperatureDto.MetricDto
+                                    Metric = new AccuWeatherConditionsResponseDto.TemperatureDto.MetricDto
                                     {
                                         Value = 1.1
                                     }
@@ -115,8 +124,20 @@ namespace Api.Tests
                     });
 
             var restClient = new Mock<IRestClient>();
-            restClient.Setup(x => x.ExecuteGetAsync<List<AccuWeatherApi.AccuWeatherResponseDto>>(It.IsAny<IRestRequest>(), It.IsAny<CancellationToken>()))
-                      .ReturnsAsync(() => response.Object);
+            restClient.Setup(x => x.ExecuteGetAsync<AccuWeatherLocationResponseDto>(It.IsAny<IRestRequest>(),
+                                                                                    It.IsAny<CancellationToken>()))
+                      .ReturnsAsync(() => locationResponse.Object);
+            restClient.Setup(x => x.ExecuteGetAsync<List<AccuWeatherConditionsResponseDto>>(It.IsAny<IRestRequest>(),
+                                                                                            It.IsAny<CancellationToken>()))
+                      .ReturnsAsync(() => conditionsResponse.Object);
+
+            var configuration = new Mock<IConfigurationRoot>();
+            configuration.Setup(x => x["AccuWeather:LocationKey"])
+                         .Returns("12345");
+            configuration.Setup(x => x["AccuWeather:LocationsUrl"])
+                         .Returns("https://api.accuweather.com");
+            configuration.Setup(x => x["AccuWeather:CurrentConditionsUrl"])
+                         .Returns("https://api.accuweather.com");
 
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddTransient<IRace, Race>();
@@ -124,7 +145,7 @@ namespace Api.Tests
             serviceCollection.AddTransient<ICsvReader, CsvReader>();
             serviceCollection.AddTransient<IFileSystem>(_ => fileSystem);
             serviceCollection.AddTransient<IWeatherApi, AccuWeatherApi>();
-            serviceCollection.AddSingleton(Mock.Of<IConfigurationRoot>());
+            serviceCollection.AddSingleton(configuration.Object);
             serviceCollection.AddTransient(_ => restClient.Object);
 
             return serviceCollection.BuildServiceProvider(true);

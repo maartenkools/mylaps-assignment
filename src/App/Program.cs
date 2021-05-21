@@ -1,5 +1,6 @@
 ﻿using Api;
 using Api.Abstractions;
+using Api.AccuWeather;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using RestSharp;

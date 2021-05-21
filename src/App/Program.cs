@@ -21,7 +21,7 @@ namespace App
             serviceCollection.AddTransient<ILaptimeFeed, LaptimeFeed>();
             serviceCollection.AddTransient<ICsvReader, CsvReader>();
             serviceCollection.AddTransient<IFileSystem, FileSystem>();
-            serviceCollection.AddTransient<IWeatherApi, WeatherApi>();
+            serviceCollection.AddTransient<IWeatherApi, AccuWeatherApi>();
             serviceCollection.AddSingleton(configurationRoot);
 
             var serviceProvider = serviceCollection.BuildServiceProvider();

@@ -72,7 +72,7 @@ namespace Api.Tests
             serviceCollection.AddTransient<ILaptimeFeed, LaptimeFeed>();
             serviceCollection.AddTransient<ICsvReader, CsvReader>();
             serviceCollection.AddTransient<IFileSystem>(_ => fileSystem ?? new MockFileSystem());
-            serviceCollection.AddTransient<IWeatherApi, WeatherApi>();
+            serviceCollection.AddTransient<IWeatherApi, AccuWeatherApi>();
             serviceCollection.AddSingleton(Mock.Of<IConfigurationRoot>());
 
             return serviceCollection.BuildServiceProvider(true);

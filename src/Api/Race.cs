@@ -8,10 +8,12 @@ namespace Api
     public class Race : IRace
     {
         private readonly ILaptimeFeed laptimeFeed;
+        private readonly IWeatherApi weatherApi;
 
-        public Race(ILaptimeFeed laptimeFeed)
+        public Race(ILaptimeFeed laptimeFeed, IWeatherApi weatherApi)
         {
             this.laptimeFeed = laptimeFeed ?? throw new ArgumentNullException(nameof(laptimeFeed));
+            this.weatherApi = weatherApi ?? throw new ArgumentNullException(nameof(weatherApi));
         }
 
         public async Task<Laptime> StartRaceAsync(uint totalLaps)

@@ -22,7 +22,7 @@ namespace Api
 
         public async Task<CurrentConditions> GetCurrentConditionsAsync()
         {
-            var request = new RestRequest("http://dataservice.accuweather.com/currentconditions/v1/249551");
+            var request = new RestRequest(this.configuration["WeatherApi:Endpoint"]);
             request.AddQueryParameter("apikey", this.configuration["WeatherApi:Key"]);
 
             var response = (await this.restClient.GetAsync<List<AccuWeatherResponseDto>>(request).ConfigureAwait(false)).Single();

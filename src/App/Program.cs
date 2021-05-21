@@ -15,6 +15,7 @@ namespace App
         internal static async Task Main()
         {
             var builder = new ConfigurationBuilder();
+            builder.AddJsonFile("appsettings.json");
             builder.AddUserSecrets<Program>();
             var configurationRoot = builder.Build();
 
@@ -41,7 +42,7 @@ namespace App
             var currentConditions = await race.GetCurrentConditionsAsync().ConfigureAwait(false);
 
             var sb = new StringBuilder();
-            sb.AppendLine("Current conditions in Haarlem");
+            sb.AppendLine($"Current conditions in {currentConditions.City}");
             sb.Append(currentConditions.Description);
             sb.Append($", {currentConditions.Temperature}C");
             if (currentConditions.Raining) sb.Append(", raining.");

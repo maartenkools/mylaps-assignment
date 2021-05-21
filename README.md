@@ -26,4 +26,4 @@ The API should expose a service that calculates the result of a race based on la
 *	Please do not spend more than 8 hours on this assignment.
 
 # TODO
-* Do not hardcode url
+* Implement a location request

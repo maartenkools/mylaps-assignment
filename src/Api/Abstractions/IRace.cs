@@ -12,7 +12,7 @@ namespace Api.Abstractions
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation. The value of the TResult parameter represents the winning <see cref="Laptime"/>.</returns>
         Task<Laptime> StartRaceAsync(uint totalLaps);
         /// <summary>
-        /// Returns the current conditions in Haarlem, The Netherland.
+        /// Returns the current conditions of the location specified in the configuration.
         /// </summary>
         /// <returns></returns>
         Task<CurrentConditions> GetCurrentConditionsAsync();

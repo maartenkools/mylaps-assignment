@@ -43,9 +43,9 @@ namespace Api.Tests
 
             using (new AssertionScope())
             {
-                winningLap.Number.Should().Be(2, "because kart #2 was expected to be the quickest");
-                winningLap.Lap.Should().Be(1, "because the winning laptime was the first lap");
-                winningLap.Time.Should().Be(TimeSpan.FromSeconds(59));
+                winningLap.Number.Should().Be(4, "because kart #4 was expected to be the quickest");
+                winningLap.Lap.Should().Be(2, "because the winning laptime was the second lap");
+                winningLap.Time.Should().Be(TimeSpan.FromSeconds(55));
             }
         }
 
@@ -87,9 +87,9 @@ namespace Api.Tests
 4,12:01:10
 5,12:01:12
 3,12:01:15
+4,12:02:05
 2,12:02:10
 1,12:02:12
-4,12:02:12
 5,12:02:16
 3,12:02:17")
             });

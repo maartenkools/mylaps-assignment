@@ -5,10 +5,14 @@ using FluentAssertions.Execution;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
+using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.IO.Abstractions;
 using System.IO.Abstractions.TestingHelpers;
+using System.Net;
+using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -45,6 +49,29 @@ namespace Api.Tests
             }
         }
 
+        [Fact]
+        public async Task Race_GetCurrentConditionsAsync_Returns_Current_Conditions()
+        {
+            var serviceProvider = BuildServiceProvider();
+
+            var race = serviceProvider.GetService<IRace>();
+
+            var currentConditions = await race.GetCurrentConditionsAsync().ConfigureAwait(false);
+
+            using (new AssertionScope())
+            {
+                currentConditions.Temperature
+                                 .Should()
+                                 .Be(1.1);
+                currentConditions.Raining
+                                 .Should()
+                                 .BeFalse();
+                currentConditions.Description
+                                 .Should()
+                                 .Be("It's always sunny in Testland!");
+            }
+        }
+
         private static IServiceProvider BuildServiceProvider()
         {
             var fileSystem = new MockFileSystem(new Dictionary<string, MockFileData>
@@ -67,13 +94,39 @@ namespace Api.Tests
 3,12:02:17")
             });
 
+
+            var response = new Mock<IRestResponse<List<AccuWeatherApi.AccuWeatherResponseDto>>>();
+            response.Setup(x => x.StatusCode)
+                    .Returns(HttpStatusCode.OK);
+            response.Setup(x => x.Data)
+                    .Returns(() => new List<AccuWeatherApi.AccuWeatherResponseDto>
+                    {
+                        new AccuWeatherApi.AccuWeatherResponseDto
+                            {
+                                HasPrecipitation = false,
+                                Temperature = new AccuWeatherApi.AccuWeatherResponseDto.TemperatureDto
+                                {
+                                    Metric = new AccuWeatherApi.AccuWeatherResponseDto.TemperatureDto.MetricDto
+                                    {
+                                        Value = 1.1
+                                    }
+                                },
+                                WeatherText = "It's always sunny in Testland!"
+                            }
+                    });
+
+            var restClient = new Mock<IRestClient>();
+            restClient.Setup(x => x.ExecuteGetAsync<List<AccuWeatherApi.AccuWeatherResponseDto>>(It.IsAny<IRestRequest>(), It.IsAny<CancellationToken>()))
+                      .ReturnsAsync(() => response.Object);
+
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddTransient<IRace, Race>();
             serviceCollection.AddTransient<ILaptimeFeed, LaptimeFeed>();
             serviceCollection.AddTransient<ICsvReader, CsvReader>();
-            serviceCollection.AddTransient<IFileSystem>(_ => fileSystem ?? new MockFileSystem());
+            serviceCollection.AddTransient<IFileSystem>(_ => fileSystem);
             serviceCollection.AddTransient<IWeatherApi, AccuWeatherApi>();
             serviceCollection.AddSingleton(Mock.Of<IConfigurationRoot>());
+            serviceCollection.AddTransient(_ => restClient.Object);
 
             return serviceCollection.BuildServiceProvider(true);
         }

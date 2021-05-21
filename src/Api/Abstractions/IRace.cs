@@ -11,5 +11,10 @@ namespace Api.Abstractions
         /// <param name="totalLaps">The number of laps the race should run.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation. The value of the TResult parameter represents the winning <see cref="Laptime"/>.</returns>
         Task<Laptime> StartRaceAsync(uint totalLaps);
+        /// <summary>
+        /// Returns the current conditions in Haarlem, The Netherland.
+        /// </summary>
+        /// <returns></returns>
+        Task<CurrentConditions> GetCurrentConditionsAsync();
     }
 }

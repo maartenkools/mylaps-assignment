@@ -16,6 +16,8 @@ namespace Api
             this.weatherApi = weatherApi ?? throw new ArgumentNullException(nameof(weatherApi));
         }
 
+        public Task<CurrentConditions> GetCurrentConditionsAsync() => this.weatherApi.GetCurrentConditionsAsync();
+
         public async Task<Laptime> StartRaceAsync(uint totalLaps)
         {
             Laptime fastestLaptime = null;
